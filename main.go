@@ -1,4 +1,4 @@
-package fixture
+package main
 
 import (
 	"./fixture"
@@ -6,13 +6,20 @@ import (
 	"time"
 )
 
-
-func main() {
-	go fixture.RunAnalysis(10, 20, 5)
-
+func test() {
 	for {
-		fmt.Println("Main Program Run")
 		time.Sleep(time.Second)
 	}
+}
+func main() {
+	go fixture.RunAnalysis(10, 20, 5, "r.jon.acevedo@gmail.com")
 
+	for i:= 1; i <= 30; i++ {
+		go test()
+	}
+
+	for {
+		fmt.Println("Main Program run")
+		time.Sleep(time.Second)
+	}
 }
