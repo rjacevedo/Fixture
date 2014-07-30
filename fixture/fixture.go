@@ -71,7 +71,7 @@ type Notifier struct {
 	last_message_routine *time.Time
 }
 
-func (n Notifier) checkRoutineAlert() {
+func (n *Notifier) checkRoutineAlert() {
 	num_routines := runtime.NumGoroutine()
 	
 	fmt.Println("Number of go routines: ", num_routines)
@@ -83,7 +83,7 @@ func (n Notifier) checkRoutineAlert() {
 
 }
 
-func (n Notifier) checkFileAlert() {
+func (n *Notifier) checkFileAlert() {
 	var fd_count bytes.Buffer
 
     process_id := os.Getpid()
@@ -107,9 +107,7 @@ func (n Notifier) checkFileAlert() {
 
 }
 
-func (n Notifier) AlertUser(subject string, body string, alert_type int) {
-
-
+func (n *Notifier) AlertUser(subject string, body string, alert_type int) {
 	if alert_type == 0 {
 		if n.last_message_fd == nil {
 			sendEmail(n.email, subject, body)
@@ -132,11 +130,13 @@ func (n Notifier) AlertUser(subject string, body string, alert_type int) {
 			x := new(time.Time)
 			*x = time.Now().UTC()
 			n.last_message_routine = x
-
+			fmt.Println("why do i keep getting nil")
 			return
 		}
 
 		diff := time.Now().UTC().Sub(*n.last_message_routine)
+		fmt.Println("The diff is: %s", diff)
+		fmt.Println("Hours is: %d", diff.Hours())
 
 		if diff.Hours() >= 1 {
 			sendEmail(n.email, subject, body)
@@ -156,7 +156,7 @@ func RunAnalysis(fd_thresh int, r_thresh int, freq_sec int, email string) {
 		return
 	}
 
-	n := Notifier{fd_thresh, r_thresh, email, nil, nil}
+	n := &Notifier{fd_thresh, r_thresh, email, nil, nil}
 
 	for {
 		if n.fd_threshold != -1 {
